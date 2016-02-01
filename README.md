@@ -24,4 +24,18 @@
     *Tool use of Gut/Wiki/Issues
     *Addresing feedback
   
-#Project Part 3
+#Project Part 3 DUE April 1
+
+    *Code base of improved 
+    *Tangile improved demo
+    *Code documentation 
+    *Test cases
+    *OOD
+    *Addressing feedback
+    *Refactoring
+    *Quality assessment report following to
+    *Improvements made
+    
+#Project Part 4 DUE April 4
+    *presentation
+    *team technical paper (to be submitted to CASCON)
