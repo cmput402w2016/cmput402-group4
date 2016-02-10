@@ -1,5 +1,6 @@
 # cmput402-group4
   Team Members: SQUAD
+                Femi, Sabrina & Hassan
 
 # Project 1 DUE Feb 12.
   
