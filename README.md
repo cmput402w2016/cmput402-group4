@@ -1,2 +1,2 @@
-## Welcome to the repo for the Distributed Route Planning 402 Project
-#### Please see wiki for documentation.
+## Distributed Route Planning 402 Project
+### Please see wiki for documentation.
