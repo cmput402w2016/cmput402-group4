@@ -13,4 +13,4 @@
 
 ### Troubleshooting
 
-An issue that may arise when attempting to run the python code where the program cannot find the .jar files, if this happens try removing **scala-*** from the external/kafka-assembly/target/scala-*/spark-streaming-kafka-assembly-*.jar filepath.
+An issue that may arise when attempting to run the python code where the program cannot find the .jar files, if this happens try removing **scala-*** from the **external/kafka-assembly/target/scala-*/spark-streaming-kafka-assembly-*.jar** filepath.
