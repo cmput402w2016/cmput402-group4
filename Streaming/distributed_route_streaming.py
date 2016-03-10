@@ -46,12 +46,14 @@ if __name__ == "__main__":
     brokers, topic = sys.argv[1:]
     kvs = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
     
+    # Splits up data based on the "geohash1_geohash2 incidentType~1234" outline given by team 1
     def handleRDD(rdd):
         dat = rdd.split(" ")
         cost = calcCost(dat[1])
-	geo = rdd.split('_') 
+	geo = dat[0].split('_') 
 	# Insert into database here
 
+    # Function where our cost calculation formula will manipulate the values attached to the different incidents (cars per hour, et cetera)
     def calcCost(dat):
 	datSplit = dat.split('~')
 	return datSplit[1]
