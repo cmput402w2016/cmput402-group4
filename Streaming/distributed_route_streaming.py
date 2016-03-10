@@ -45,11 +45,17 @@ if __name__ == "__main__":
 
     brokers, topic = sys.argv[1:]
     kvs = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
-    lines = kvs.map(lambda x: x[1])
-    counts = lines.flatMap(lambda line: line.split(" ")) \
-        .map(lambda word: (word, 1)) \
-        .reduceByKey(lambda a, b: a+b)
-    counts.pprint()
+    
+    def handleRDD(rdd):
+        dat = rdd.split(" ")
+        cost = calcCost(dat[1])
+	geo = rdd.split('_') 
+	# Insert into database here
 
+    def calcCost(dat):
+	datSplit = dat.split('~')
+	return datSplit[1]
+
+    kvs.foreachRDD(handleRDD)
     ssc.start()
     ssc.awaitTermination()
