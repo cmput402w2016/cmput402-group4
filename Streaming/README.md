@@ -7,7 +7,7 @@
 ```
  bin/spark-submit --jars \
       external/kafka-assembly/target/scala-*/spark-streaming-kafka-assembly-*.jar \
-      examples/src/main/python/streaming/distributed_route_streaming.py  
+      examples/src/main/python/streaming/distributed_route_streaming.py localhost:9092 test
 ```
 > Note that to run this on your local machine, you need to setup Kafka and create a producer first, see: http://kafka.apache.org/documentation.html#quickstart
 
