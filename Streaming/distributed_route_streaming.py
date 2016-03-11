@@ -30,7 +30,9 @@
 """
 
 import sys
+import json
 
+from mysql.connector import (connection)
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
@@ -44,14 +46,31 @@ if __name__ == "__main__":
     ssc = StreamingContext(sc, 2)
     brokers, topic = sys.argv[1:]
     kvs = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
-    lines = kvs.map(lambda x: x[1])
-    lines.pprint()
-    #data = lines.split(" ")
-    #locationData = data[0].split('_')
-    #incidentData = data[1].split('~')
-    #cost = incidentData[1]
-    #incidentType = incidentData[0]
-    #print cost
-    #print incidentType
+
+    # Open a database connection and save into the segments table based on whats in the kafka message.
+    def saveJsontoSQL(r):
+        sqlConnection = connection.MySQLConnection(user='root', database='DRPdev', password='bananas', host='localhost')
+        cursor=sqlConnection.cursor()
+        add_segment = ("INSERT INTO segments "
+               "(startlat, startlong, cost, endlat, endlong) "
+               "VALUES (%(startlat)s, %(startlong)s, %(cost)s, %(endlat)s, %(endlong)s)")
+        parsedJson = json.loads(r[1])
+
+        segment = {'startlat': lat1,
+                   'startlong': long1,
+                   'cost': cost,
+                   'endlat': lat2,
+                   'endlong': long2}
+        cursor.execute(add_segment, segment)
+        sqlConnection.commit()
+        cursor.close()
+        sqlConnection.close()
+
+
+    parsed = kvs.map(saveJsontoSQL)
+    parsed.pprint()
+    
     ssc.start()
     ssc.awaitTermination()
+
+
