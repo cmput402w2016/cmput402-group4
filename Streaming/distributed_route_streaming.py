@@ -55,7 +55,11 @@ if __name__ == "__main__":
                "(startlat, startlong, cost, endlat, endlong) "
                "VALUES (%(startlat)s, %(startlong)s, %(cost)s, %(endlat)s, %(endlong)s)")
         parsedJson = json.loads(r[1])
-
+        lat1 = str(parsedJson["startlat"])
+        long1 = str(parsedJson["startlong"])
+        cost = str(parsedJson["cost"])
+        lat2 = str(parsedJson["endlat"])
+        long2 = str(parsedJson["endlong"])
         segment = {'startlat': lat1,
                    'startlong': long1,
                    'cost': cost,
@@ -72,5 +76,3 @@ if __name__ == "__main__":
     
     ssc.start()
     ssc.awaitTermination()
-
-
