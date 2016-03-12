@@ -2,7 +2,6 @@
 <script src="//google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.14/src/markerclusterer_packed.js"></script>
 <script src='//google-maps-utility-library-v3.googlecode.com/svn/tags/infobox/1.1.9/src/infobox_packed.js' type='text/javascript'></script> <!-- only if you need custom infoboxes -->
 
-
 <div class="row">
   <div class="col-md-3">
      <h2>Calculate your route</h2>
@@ -93,7 +92,7 @@ function displayOnMap(position){
   handler.map.centerOn(marker);
 };
 
-// Used for a route between 2 chosen points
+// Used for a route between 2 chosen points (from the UI)
 function calculateRoute(from, to) {
   var directionsRequest = {
     origin: from,
@@ -102,7 +101,24 @@ function calculateRoute(from, to) {
     unitSystem: google.maps.UnitSystem.METRIC,
     provideRouteAlternatives: true,
   };
-  directionsService.route(directionsRequest, function(response, status) {
+  displayThreeRoutes(directionsRequest);
+}
+
+// Used for route between current position and some other position.
+function calcRoute(position, destination) {
+  var origin      = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+  var request = {
+    origin:      origin,
+    destination: destination,
+    travelMode: google.maps.DirectionsTravelMode.DRIVING,
+    unitSystem: google.maps.UnitSystem.METRIC,
+    provideRouteAlternatives: true,
+  };
+  displayThreeRoutes(request);
+}
+
+function displayThreeRoutes(request) {
+  directionsService.route(request, function(response, status) {
     if (status == google.maps.DirectionsStatus.OK) {    
       // Clear the old routes
       for (var i = 0, len = directionRenderers.length; i < len; i++){
@@ -122,36 +138,9 @@ function calculateRoute(from, to) {
   });
 }
 
-// Used for route between current position and some other position.
-function calcRoute(position, destination) {
-  var origin      = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-  var request = {
-    origin:      origin,
-    destination: destination,
-    travelMode: google.maps.DirectionsTravelMode.DRIVING,
-    unitSystem: google.maps.UnitSystem.METRIC,
-    provideRouteAlternatives: true,
-  };
-  directionsService.route(request, function(response, status) {
-      // Clear the old routes
-      for (var i = 0, len = directionRenderers.length; i < len; i++){
-        directionRenderers[i].setMap(null);
-      }
-      for (var i = 0, len = response.routes.length; i < len; i++) {
-        // Display at most 3 routes
-        if (i< 3) {
-          directionRenderers[i] = new google.maps.DirectionsRenderer({
-            map: map,
-            directions: response,
-            routeIndex: i
-          });  
-        }
-      }
-  });
-}
+
 
 $(document).ready(function() {
-
   // If the browser supports the Geolocation API
   if (typeof navigator.geolocation == "undefined") {
     $("#error").text("Your browser doesn't support the Geolocation API");
