@@ -1,0 +1,29 @@
+To start up the kafka stuff:
+
+1)Start zookeeper:
+
+bin/zookeeper-server-start.sh config/zookeeper.properties
+
+2)Start kafka server:
+
+bin/kafka-server-start.sh config/server.properties
+
+3)List the topics just to check:
+
+bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+Create a topic if it isnt there:
+
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic segments
+
+4)Start the spark stream on a topic
+
+bin/spark-submit --jars external/kafka-assembly/target/spark-streaming-kafka-assembly_2.11-2.0.0-SNAPSHOT.jar examples/src/main/python/streaming/distributed_route_streaming.py localhost:9092 segments
+
+5)Go to the kafka-producer folder and run the java code 
+
+To list all messages in a topic called 'test':
+
+target/kafka-producer producer
+
+bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning

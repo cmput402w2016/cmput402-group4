@@ -41,7 +41,7 @@ public class Producer {
                 S.endlat = Math.random() * 90 + 1;
                 S.endlong = Math.random() * 90 + 1;
                 //producer.send(new ProducerRecord<String, String>("summary-markers", String.format("{\"type\":\"other\", \"t\":%.3f, \"k\":%d}", System.nanoTime() * 1e-9, i)));
-                producer.send(new ProducerRecord<String, String>("summary-markers", gson.toJson(S)));
+                producer.send(new ProducerRecord<String, String>("segments", gson.toJson(S)));
                 producer.flush();
                 System.out.println("Sent msg number " + i);
             }
