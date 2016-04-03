@@ -32,6 +32,7 @@
 
   <p id="error"></p>
 </div>
+<div class="modal"></div>
 
 <script>
 var currentlocation;
@@ -119,27 +120,40 @@ function attachInstructionText(marker, text) {
   });
 }
 
-function showSteps(directionResult, routeIndex) {
+function showSteps(directionResult) {
   // For each step, place a marker, and add the text to the marker's
   // info window. Also attach the marker to an array so we
   // can keep track of it and remove it when calculating new
   // routes.
 
+  // Theres only ever 3 possible routes max
+  var paths = new Array(3);
   // Display first route only
   var myRoute = directionResult.routes[0].legs[0];
 
-  console.log("OverviewPath:");
+  // Put lat long values into an array of arrays, for some reason cannot just pass the overview_paths
+  // directly from ajax...
+  for (var i=0; i< directionResult.routes.length; i++) {
+    paths[i] = new Array(directionResult.routes[i].overview_path.length);
+    for (var j = 0; j < directionResult.routes[i].overview_path.length; j++) {
+      var tuple = {lat:directionResult.routes[i].overview_path[j].lat(), lng:directionResult.routes[i].overview_path[j].lng()};
+      paths[i][j] = tuple;
+    }
+  }
+
+/*  console.log("overviewpath[0]");
   for (var i = 0; i < directionResult.routes[0].overview_path.length; i++) {
     console.log("lat:");
     console.log(directionResult.routes[0].overview_path[i].lat());
     console.log(" long:");
     console.log(directionResult.routes[0].overview_path[i].lng());
+
     var marker = new google.maps.Marker({
       position: directionResult.routes[0].overview_path[i],
       map: map
     });
     markerArray[i] = marker;
-  }
+  }*/
   
   var marker = new google.maps.Marker({
     position: directionResult.routes[0].legs[0].start_location,
@@ -150,15 +164,30 @@ function showSteps(directionResult, routeIndex) {
     map: map
   });
   markerArray[0] = marker; 
-  markerArray[1] = marker2; 
-  /*for (var i = 0; i < myRoute.steps.length; i++) {
-      var marker = new google.maps.Marker({
-        position: myRoute.steps[i].start_point,
-        map: map
-      });
-      attachInstructionText(marker, myRoute.steps[i].instructions);
-      markerArray[i] = marker;
-  }*/
+  markerArray[1] = marker2;
+
+  // Pass result to rails controller
+  $.ajax({
+    url : "/calcroute",
+    type : "post",
+    data: { paths: JSON.stringify(paths)},
+    success: function(data) {
+      // Do something with the response here
+      alert('routeindex = ' + data.routeindex);
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      alert(xhr.responseText);
+    }
+  });
+
+  /*$body = $("body");
+  $body.addClass("loading");
+  while (gon.bestroute == null) {
+    //Wait
+  }
+  $body.removeClass("loading");
+  alert(gon.bestroute)
+*/
 }
 
 // Used for route between current position and some other position.
@@ -193,13 +222,18 @@ function displayThreeRoutes(request) {
             directions: response,
             routeIndex: i
           });
-          showSteps(response, i);
         }
       }
+      showSteps(response);
     }
   });
 }
 
+$body = $("body");
+$(document).on({
+  ajaxStart: function() { $body.addClass("loading");    },
+  ajaxStop: function() { $body.removeClass("loading"); }
+});
 
 $(document).ready(function() {
   // If the browser supports the Geolocation API
