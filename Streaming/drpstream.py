@@ -32,6 +32,7 @@
 import sys
 import json
 import psycopg2
+import Geohash
 
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
@@ -52,22 +53,33 @@ if __name__ == "__main__":
     def costAlgo(r):
         parsedJson = json.loads(r[1])
         # This needs to change depending on the stream information. Then we handle that and calculate cost.
-        lat1 = str(parsedJson["startlat"])
-        long1 = str(parsedJson["startlong"])
-        lat2 = str(parsedJson["endlat"])
-        long2 = str(parsedJson["endlong"])
+        fromStuff = str(parsedJson["from"])
+        fromHash = Geohash.encode(fromHash.get("lat"),fromHash.get("lon"), 9)
+        dest = str(parsedJson["to"])
+        toHash = Geohash.encode(dest.get("lat"),dest.get("lon"), 9)
+
+        keyHash = str(parsedJson["key"])
+        tStamp = str(parsedJson["timestamp"])
+        value = str(parsedJson["value"])
 
         # Try to connect and insert into our database
         try:
-            conn = psycopg2.connect("dbname='foo' user='dbuser' password='mypass'")
+            conn = psycopg2.connect("dbname='DRP' user='postgres' password='bananas'")
         except:
             print "I am unable to connect to the database."
 
         cur = conn.cursor()
         try:
-            cur.execute("""INSERT INTO some_table (startlat, startlong, cost, endlat, endlong) VALUES (%startlat, %startlong, %cost, %endlat, %endlong);""",(lat1, long1, cost, lat2, long2)))
+
+            cur.execute("""SELECT * FROM geohashed_ways WHERE geohash LIKE  """+fromHash)
+            cur.fetchone()
+
         except:
-            print "I can't INSERT."
+            print "I can't SELECT."
+        try:
+            cur.execute("""INSERT INTO ways (startlat, startlong, cost, endlat, endlong) VALUES (%startlat, %startlong, %cost, %endlat, %endlong);""",(lat1, long1, cost, lat2, long2)))
+        except:
+            print "I can't INSERT"
         cur.close()
         conn.close()
 
