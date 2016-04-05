@@ -54,10 +54,10 @@ if __name__ == "__main__":
     def costAlgo(r):
         parsedJson = json.loads(r[1])
         # This needs to change depending on the stream information. Then we handle that and calculate cost.
-        fromStuff = str(parsedJson["from"])
-        fromHash = Geohash.encode(fromHash.get("lat"),fromHash.get("lon"), 9)
+        fromHash = str(parsedJson["from"])
+        geohash = Geohash.encode(fromHash.get("lat"),fromHash.get("lon"), 9)
         dest = str(parsedJson["to"])
-        toHash = Geohash.encode(dest.get("lat"),dest.get("lon"), 9)
+        toHash = Geohash.encode(dest.get("lat"),dest.get("lon"), 8)
 
         keyHash = str(parsedJson["key"])
         tStamp = str(parsedJson["timestamp"])
@@ -71,8 +71,7 @@ if __name__ == "__main__":
 
         cur = conn.cursor()
         try:
-
-            cur.execute("""SELECT * FROM geohashed_ways WHERE geohash LIKE  """+fromHash)
+            cur.execute("""SELECT * FROM geohashed_ways WHERE geohash LIKE  """ + "'" + geohash + "'%;")
             cur.fetchone()
 
         except:
