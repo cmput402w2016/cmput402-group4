@@ -25,14 +25,18 @@
  and then run the example
     `$ bin/spark-submit --jars \
       external/kafka-assembly/target/scala-*/spark-streaming-kafka-assembly-*.jar \
-      examples/src/main/python/streaming/distributed_route_streaming.py \
+      examples/src/main/python/streaming/drpstream.py \
       localhost:9092 test`
 """
 
 import sys
 import json
+
+# The following are imported
 import psycopg2
+import psycopg2.extras
 import Geohash
+import pghstore
 
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
@@ -69,14 +73,30 @@ if __name__ == "__main__":
         except:
             print "I am unable to connect to the database."
 
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:
-            cur.execute("""SELECT * FROM geohashed_ways WHERE geohash LIKE  """ + "'" + geohash + "'%;")
-            cur.fetchone()
+            result = None
+
+            while result == None:
+                cur.execute("""SELECT * FROM geohashed_ways WHERE geohash LIKE  """ + "'" + geohash + "'%;")
+                result = cur.fetchone()
+                geohash = geohash[:-1]
 
         except:
             print "I can't SELECT."
+
+        # Compute the cost using the updated data that was streamed and data already existing in our database.
+        tagDict = pghstore.loads(result['tags'])
+        cost = value
+        for k,v in tagDict:
+            if k == 'lanes':
+
+            if k == 'highway':
+
+            if k == 'maxspeed':
+
         try:
+            # Insert the updated cost for the way into our database.
             cur.execute("""INSERT INTO ways (startlat, startlong, cost, endlat, endlong) VALUES (%startlat, %startlong, %cost, %endlat, %endlong);""",(lat1, long1, cost, lat2, long2)))
         except:
             print "I can't INSERT"
