@@ -43,8 +43,9 @@ if __name__ == "__main__":
         #print("Usage: direct_kafka_wordcount.py <broker_list> <topic>", file=sys.stderr)
         exit(-1)
 
+    # Create a streaming context for our application with a 5 second batch duration.
     sc = SparkContext(appName="PythonStreamingDistributedRoute")
-    ssc = StreamingContext(sc, 2)
+    ssc = StreamingContext(sc, 5)
     brokers, topic = sys.argv[1:]
     kvs = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
 
