@@ -87,13 +87,52 @@ if __name__ == "__main__":
 
         # Compute the cost using the updated data that was streamed and data already existing in our database.
         tagDict = pghstore.loads(result['tags'])
-        cost = value
+        isAccident = False
+        if keyHash == 'TRAFFIC_INCIDENT':
+            cost = value*10
+            isAccident = True
+        else:
+            cost = value
+
         for k,v in tagDict:
             if k == 'lanes':
 
-            if k == 'highway':
+                if tagDict[k] == 2 && result['oneway'] == 'yes':
+                    if isAccident:
+                        cost=cost+(value*10)
+                    else:
+                        cost=cost+20
+                elif tagDict[k] == 2 && result['oneway'] == 'no':
+                    if isAccident:
+                        cost=cost+(value*5)
+                    else:
+                        cost=cost+15
+                elif tagDict[k] > 2 && result('oneway') == 'yes':
+                    if isAccident:
+                        cost=cost+(value*5)
+                    else:
+                        cost=cost+10
+                elif tagDict[k] > 2 && result('oneway') == 'no':
+                    if isAccident:
+                        cost=cost+(value*2)
+                    else:
+                        cost=cost+5
 
-            if k == 'maxspeed':
+            elif k == 'highway':
+                if tagDict[k] == 'primary':
+                    cost=cost-20
+                elif tagDict[k] == 'secondary':
+                    cost=cost-15
+                elif tagDict[k] == 'trunk':
+                    cost=cost-10
+                elif tagDict[k] == 'trunk_link':
+                    cost=cost-5
+
+            elif k == 'maxspeed':
+                if tagDict[k] >= 50:
+                    cost = cost-tagDict[k]
+                else:
+                    cost = cost+tagDict[k]
 
         try:
             # Insert the updated cost for the way into our database.
