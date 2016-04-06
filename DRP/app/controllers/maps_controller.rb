@@ -3,7 +3,6 @@ class MapsController < ApplicationController
   def index
   end
 
-
   def calcroute
     #empty the global nodes array every time a new request is sent.
     nodes = []
@@ -21,12 +20,14 @@ class MapsController < ApplicationController
           # Get the closest matching node
           k = 3
           trimmedhash = geohash[0,geohash.length-k]
-          while Node.where("geohash LIKE (?)", "#{trimmedhash}%").empty?
+          nodeArray = Node.where("geohash LIKE (?)", "#{trimmedhash}%")
+          while nodeArray.empty?
             k+=1
             trimmedhash = geohash[0,geohash.length-k]
+            nodeArray = Node.where("geohash LIKE (?)", "#{trimmedhash}%")
           end
           #add the node to the array of nodes for this path
-          nodearray.append(osmNode = Node.where("geohash LIKE (?)", "#{trimmedhash}%").first)
+          nodearray.append(nodeArray.first)
           j+=1
         end
         # add each array of nodes to the 2d array

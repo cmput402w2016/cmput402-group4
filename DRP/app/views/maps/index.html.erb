@@ -120,7 +120,7 @@ function attachInstructionText(marker, text) {
   });
 }
 
-function showSteps(directionResult) {
+function computeOptimalRoute(directionResult) {
   // For each step, place a marker, and add the text to the marker's
   // info window. Also attach the marker to an array so we
   // can keep track of it and remove it when calculating new
@@ -128,8 +128,6 @@ function showSteps(directionResult) {
 
   // Theres only ever 3 possible routes max
   var paths = new Array(3);
-  // Display first route only
-  var myRoute = directionResult.routes[0].legs[0];
 
   // Put lat long values into an array of arrays, for some reason cannot just pass the overview_paths
   // directly from ajax...
@@ -141,20 +139,6 @@ function showSteps(directionResult) {
     }
   }
 
-/*  console.log("overviewpath[0]");
-  for (var i = 0; i < directionResult.routes[0].overview_path.length; i++) {
-    console.log("lat:");
-    console.log(directionResult.routes[0].overview_path[i].lat());
-    console.log(" long:");
-    console.log(directionResult.routes[0].overview_path[i].lng());
-
-    var marker = new google.maps.Marker({
-      position: directionResult.routes[0].overview_path[i],
-      map: map
-    });
-    markerArray[i] = marker;
-  }*/
-  
   var marker = new google.maps.Marker({
     position: directionResult.routes[0].legs[0].start_location,
     map: map
@@ -173,21 +157,30 @@ function showSteps(directionResult) {
     data: { paths: JSON.stringify(paths)},
     success: function(data) {
       // Do something with the response here
-      alert('routeindex = ' + data.routeindex);
+      //alert('routeindex = ' + data.routeindex);
+      var polyline = new google.maps.Polyline({
+        path: [],
+        strokeColor: '#FF0000',
+        strokeWeight: 10
+      });
+
+      var legs = directionResult.routes[data.routeindex].legs;
+      for (i=0;i<legs.length;i++) {
+        var steps = legs[i].steps;
+        for (j=0;j<steps.length;j++) {
+          var nextSegment = steps[j].path;
+          for (k=0;k<nextSegment.length;k++) {
+            polyline.getPath().push(nextSegment[k]);
+          }
+        }
+      }
+      polyline.setMap(map);
     },
     error: function(xhr, ajaxOptions, thrownError) {
       alert(xhr.responseText);
     }
   });
 
-  /*$body = $("body");
-  $body.addClass("loading");
-  while (gon.bestroute == null) {
-    //Wait
-  }
-  $body.removeClass("loading");
-  alert(gon.bestroute)
-*/
 }
 
 // Used for route between current position and some other position.
@@ -224,7 +217,7 @@ function displayThreeRoutes(request) {
           });
         }
       }
-      showSteps(response);
+      computeOptimalRoute(response);
     }
   });
 }
