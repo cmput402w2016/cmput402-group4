@@ -97,22 +97,22 @@ if __name__ == "__main__":
         for k,v in tagDict:
             if k == 'lanes':
 
-                if tagDict[k] == 2 && result['oneway'] == 'yes':
+                if tagDict[k] == 2 and result['oneway'] == 'yes':
                     if isAccident:
                         cost=cost+(value*10)
                     else:
                         cost=cost+20
-                elif tagDict[k] == 2 && result['oneway'] == 'no':
+                elif tagDict[k] == 2 and result['oneway'] == 'no':
                     if isAccident:
                         cost=cost+(value*5)
                     else:
                         cost=cost+15
-                elif tagDict[k] > 2 && result('oneway') == 'yes':
+                elif tagDict[k] > 2 and result('oneway') == 'yes':
                     if isAccident:
                         cost=cost+(value*5)
                     else:
                         cost=cost+10
-                elif tagDict[k] > 2 && result('oneway') == 'no':
+                elif tagDict[k] > 2 and result('oneway') == 'no':
                     if isAccident:
                         cost=cost+(value*2)
                     else:
