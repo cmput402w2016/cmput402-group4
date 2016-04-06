@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
         try:
             # Insert the updated cost for the way into our database.
-            cur.execute("""INSERT INTO ways (startlat, startlong, cost, endlat, endlong) VALUES (%startlat, %startlong, %cost, %endlat, %endlong);""",(lat1, long1, cost, lat2, long2)))
+            cur.execute("""INSERT INTO ways cost VALUES """ + cost + " where way.id=" + result['id'] + ';')
         except:
             print "I can't INSERT"
         cur.close()
