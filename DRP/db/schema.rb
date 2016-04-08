@@ -11,6 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 20160315225039) do
+
+  create_table "segments", force: :cascade do |t|
+    t.decimal "startlat",  precision: 11, scale: 6
+    t.decimal "startlong", precision: 11, scale: 6
+    t.decimal "cost",      precision: 11, scale: 6
+    t.decimal "endlat",    precision: 11, scale: 6
+    t.decimal "endlong",   precision: 11, scale: 6
+  end
 
 end

@@ -31,7 +31,7 @@ development:
   database: DRPdev
   pool: 5
   username: root
-  password: bananas
+  password:
   shost: localhost
 test:
   adapter: mysql2
@@ -40,7 +40,7 @@ test:
   database: DRPtest
   pool: 5
   username: root
-  password: bananas
+  password:
   shost: localhost
 production:
   adapter: mysql2
@@ -49,5 +49,5 @@ production:
   database: DRP
   pool: 5
   username: root
-  password: bananas
+  password: 
   shost: localhost
