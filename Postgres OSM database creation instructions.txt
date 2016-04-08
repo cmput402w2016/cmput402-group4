@@ -1,0 +1,21 @@
+How to add the db:
+
+Create a database with user postgres
+import the edmonton metro extract osm data with osmosis
+create a materialized view with the geohash data
+
+	CREATE MATERIALIZED VIEW public.geohashed_nodes AS 
+	 SELECT *, st_x(nodes.geom) AS lon, st_y(nodes.geom) AS lat, st_geohash(st_setsrid(st_makepoint(st_x(nodes.geom), st_y(nodes.geom)), 4326)) AS geohash
+	   FROM nodes
+
+add index to the geohashes
+
+	CREATE INDEX geo_idx ON geohashed_nodes (geohash text_pattern_ops);
+
+add nodes idx for ways table with the following command:
+
+  CREATE INDEX nodes_idx on ways USING GIN ("nodes");
+
+add a cost column to the ways table
+	
+	ALTER TABLE ways ADD COLUMN cost integer;
